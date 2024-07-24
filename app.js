@@ -854,6 +854,36 @@ async function getReward() {
         console.error("Error al reclamar recompensa:", error);
     }
 }
+// Funcion para añadir liquidez
+async function addLiquidity(amount) {
+    const accounts = await web3.eth.getAccounts();
+    await contract.methods.addLiquidity(amount).send({ from: accounts[0] });
+}
+
+document.getElementById('addLiquidityButton').onclick = async () => {
+    const amount = document.getElementById('liquidityAmount').value;
+    await addLiquidity(amount);
+};
+// Funcion para swap
+async function swapTokens(amount) {
+    const accounts = await web3.eth.getAccounts();
+    await contract.methods.swap(amount).send({ from: accounts[0] });
+}
+
+document.getElementById('swapButton').onclick = async () => {
+    const amount = document.getElementById('swapAmount').value;
+    await swapTokens(amount);
+};
+
+async function withdrawLiquidity(amount) {
+    const accounts = await web3.eth.getAccounts();
+    await contract.methods.withdrawLiquidity(amount).send({ from: accounts[0] });
+}
+// Funcion para retirar liquidez
+document.getElementById('withdrawButton').onclick = async () => {
+    const amount = document.getElementById('withdrawAmount').value;
+    await withdrawLiquidity(amount);
+};
 
 document.getElementById('connect').onclick = async () => {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
