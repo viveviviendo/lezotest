@@ -1,23 +1,22 @@
 // Espera a que la ventana se cargue
 window.addEventListener('load', async () => {
-    // Verifica si el navegador tiene una extensión de billetera Ethereum instalada (como MetaMask)
     if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
         try {
-            // Solicita al usuario acceso a la billetera Ethereum
+            // Solicita acceso a la billetera Ethereum
             await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const accounts = await web3.eth.getAccounts();
-            console.log('Connected account:', accounts[0]);
+            const account = await getCurrentAccount();
+            console.log('Connected account:', account);
         } catch (error) {
-            console.error("El usuario denegó el acceso a la billetera");
+            handleError("El usuario denegó el acceso a la billetera", error);
         }
     } else {
-        // Si no hay una extensión de billetera instalada, muestra un mensaje de error
-        console.error('No se detectó ningún proveedor de Web3. Por favor, instala MetaMask.');
+        handleError('No se detectó ningún proveedor de Web3. Por favor, instala MetaMask.');
     }
 });
 
-const contractAddress = 0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5;  // Reemplaza con tu dirección del contrato
+// Dirección del contrato y ABI (reemplaza ABI_CODIGO con el código ABI real)
+const contractAddress = "0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5";  // Reemplaza con tu dirección del contrato
 const abi = [
         {
             "inputs": [
@@ -831,69 +830,119 @@ const abi = [
             "type": "function"
         }
     ];  // Reemplaza con el ABI de tu contrato
-const contract = new web3.eth.Contract(abi, contractAddress);
-
-// Función para hacer staking
-async function stakeTokens(amount) {
-    const accounts = await web3.eth.getAccounts();
-    try {
-        await contract.methods.stake(amount).send({ from: accounts[0] });
-        console.log(`Has hecho stake de ${amount} tokens`);
-    } catch (error) {
-        console.error("Error al hacer staking:", error);
+    const contract = new web3.eth.Contract(abi, contractAddress);
+    
+    // Función para obtener la cuenta actual
+    async function getCurrentAccount() {
+        const accounts = await web3.eth.getAccounts();
+        return accounts[0];
     }
-}
-
-// Función para reclamar recompensas
-async function getReward() {
-    const accounts = await web3.eth.getAccounts();
-    try {
-        await contract.methods.getReward().send({ from: accounts[0] });
-        console.log("Recompensa reclamada");
-    } catch (error) {
-        console.error("Error al reclamar recompensa:", error);
+    
+    // Función para manejar errores de manera centralizada
+    function handleError(message, error = '') {
+        console.error(message, error);
     }
-}
-// Funcion para añadir liquidez
-async function addLiquidity(amount) {
-    const accounts = await web3.eth.getAccounts();
-    await contract.methods.addLiquidity(amount).send({ from: accounts[0] });
-}
-
-document.getElementById('addLiquidityButton').onclick = async () => {
-    const amount = document.getElementById('liquidityAmount').value;
-    await addLiquidity(amount);
-};
-// Funcion para swap
-async function swapTokens(amount) {
-    const accounts = await web3.eth.getAccounts();
-    await contract.methods.swap(amount).send({ from: accounts[0] });
-}
-
-document.getElementById('swapButton').onclick = async () => {
-    const amount = document.getElementById('swapAmount').value;
-    await swapTokens(amount);
-};
-
-async function withdrawLiquidity(amount) {
-    const accounts = await web3.eth.getAccounts();
-    await contract.methods.withdrawLiquidity(amount).send({ from: accounts[0] });
-}
-// Funcion para retirar liquidez
-document.getElementById('withdrawButton').onclick = async () => {
-    const amount = document.getElementById('withdrawAmount').value;
-    await withdrawLiquidity(amount);
-};
-
-document.getElementById('connect').onclick = async () => {
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const accounts = await web3.eth.getAccounts();
-    console.log('Connected account:', accounts[0]);
-};
-
-document.getElementById('stakeButton').addEventListener('click', () => {
-    const amount = prompt("Ingrese la cantidad de tokens a stakear:");
-    stakeTokens(amount);
-});
-
-document.getElementById('rewardButton').addEventListener('click', getReward);
+    
+    // Función para hacer staking
+    async function stakeTokens(amount) {
+        const account = await getCurrentAccount();
+        try {
+            await contract.methods.stake(amount).send({ from: account });
+            console.log(`Has hecho stake de ${amount} tokens`);
+        } catch (error) {
+            handleError("Error al hacer staking:", error);
+        }
+    }
+    
+    // Función para reclamar recompensas
+    async function getReward() {
+        const account = await getCurrentAccount();
+        try {
+            await contract.methods.getReward().send({ from: account });
+            console.log("Recompensa reclamada");
+        } catch (error) {
+            handleError("Error al reclamar recompensa:", error);
+        }
+    }
+    
+    // Función para añadir liquidez
+    async function addLiquidity(amount) {
+        const account = await getCurrentAccount();
+        try {
+            await contract.methods.addLiquidity(amount).send({ from: account });
+            console.log(`Has añadido ${amount} de liquidez`);
+        } catch (error) {
+            handleError("Error al añadir liquidez:", error);
+        }
+    }
+    
+    // Función para hacer swap de tokens
+    async function swapTokens(amount) {
+        const account = await getCurrentAccount();
+        try {
+            await contract.methods.swap(amount).send({ from: account });
+            console.log(`Has hecho swap de ${amount} tokens`);
+        } catch (error) {
+            handleError("Error al hacer swap de tokens:", error);
+        }
+    }
+    
+    // Función para retirar liquidez
+    async function withdrawLiquidity(amount) {
+        const account = await getCurrentAccount();
+        try {
+            await contract.methods.withdrawLiquidity(amount).send({ from: account });
+            console.log(`Has retirado ${amount} de liquidez`);
+        } catch (error) {
+            handleError("Error al retirar liquidez:", error);
+        }
+    }
+    
+    // Manejadores de eventos para los botones del DOM
+    document.getElementById('connect').onclick = async () => {
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const account = await getCurrentAccount();
+            console.log('Connected account:', account);
+        } catch (error) {
+            handleError("Error al conectar la cuenta:", error);
+        }
+    };
+    
+    document.getElementById('stakeButton').onclick = () => {
+        const amount = prompt("Ingrese la cantidad de tokens a stakear:");
+        if (isNaN(amount) || amount <= 0) {
+            handleError("Ingrese una cantidad válida");
+            return;
+        }
+        stakeTokens(amount);
+    };
+    
+    document.getElementById('rewardButton').onclick = getReward;
+    
+    document.getElementById('addLiquidityButton').onclick = async () => {
+        const amount = document.getElementById('liquidityAmount').value;
+        if (isNaN(amount) || amount <= 0) {
+            handleError("Ingrese una cantidad válida");
+            return;
+        }
+        await addLiquidity(amount);
+    };
+    
+    document.getElementById('swapButton').onclick = async () => {
+        const amount = document.getElementById('swapAmount').value;
+        if (isNaN(amount) || amount <= 0) {
+            handleError("Ingrese una cantidad válida");
+            return;
+        }
+        await swapTokens(amount);
+    };
+    
+    document.getElementById('withdrawButton').onclick = async () => {
+        const amount = document.getElementById('withdrawAmount').value;
+        if (isNaN(amount) || amount <= 0) {
+            handleError("Ingrese una cantidad válida");
+            return;
+        }
+        await withdrawLiquidity(amount);
+    };
