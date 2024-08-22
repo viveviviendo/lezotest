@@ -15,7 +15,7 @@ window.addEventListener('load', async () => {
     }
 });
 
-// Dirección del contrato y ABI (reemplaza ABI_CODIGO con el código ABI real)
+// Dirección del contrato y ABI
 const contractAddress = "0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5";  // Reemplaza con tu dirección del contrato
 const abi = [
         {
