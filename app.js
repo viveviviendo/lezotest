@@ -14,6 +14,12 @@ window.addEventListener('load', async () => {
         handleError('No se detectó ningún proveedor de Web3. Por favor, instala MetaMask.');
     }
 });
+// Ajustar la velocidad del cambio de color
+setInterval(() => {
+    // Código que cambia los colores
+    const element = document.querySelector('elementSelector');  // Selecciona el elemento al que le cambian los colores
+    element.style.backgroundColor = generateRandomColor();  // Función que genera un color aleatorio
+}, 3000);  // Cambia el color cada 3 segundos (3000 ms)
 
 // Dirección del contrato y ABI
 const contractAddress = "0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5";  // Reemplaza con tu dirección del contrato
@@ -831,6 +837,25 @@ const abi = [
         }
     ];  // Reemplaza con el ABI de tu contrato
     const contract = new web3.eth.Contract(abi, contractAddress);
+
+    // Evento para conectar la billetera (MetaMask)
+document.getElementById('connect').onclick = async () => {
+    if (window.ethereum) {
+        try {
+            // Solicitar acceso a la billetera
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await web3.eth.getAccounts();
+            console.log('Cuenta conectada:', accounts[0]);
+            alert(`Cuenta conectada: ${accounts[0]}`);
+        } catch (error) {
+            console.error("Error al conectar la billetera", error);
+            alert("Error al conectar la billetera. Asegúrate de aprobar la conexión.");
+        }
+    } else {
+        console.error('MetaMask no está instalado.');
+        alert('MetaMask no está instalado. Por favor, instálalo para continuar.');
+    }
+};
     
     // Función para obtener la cuenta actual
     async function getCurrentAccount() {
