@@ -12,18 +12,47 @@ window.addEventListener('load', async () => {
             handleError("El usuario denegó el acceso a la billetera", error);
         }
     } else {
-        handleError('No se detectó ningún proveedor de Web3. Por favor, instala MetaMask.');
+        handleError('MetaMask no está instalado. Por favor, instala MetaMask para continuar.');
     }
 });
 
-// Ajustar la velocidad del cambio de color
-setInterval(() => {
-    const element = document.querySelector('elementSelector');  // Reemplazar 'elementSelector' con el selector correcto
-    element.style.backgroundColor = generateRandomColor();  // Asegúrate de tener esta función definida
-}, 5000);  // Cambia el color cada 5 segundos
+// Función para verificar si MetaMask está instalada
+document.getElementById('connect').onclick = async () => {
+    if (window.ethereum) {
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const account = await getCurrentAccount();
+            updateConnectButton(account);
+            console.log('Cuenta conectada:', account);
+            alert(`Cuenta conectada: ${account}`);
+        } catch (error) {
+            handleError("Error al conectar la billetera", error);
+        }
+    } else {
+        console.error('MetaMask no está instalado.');
+        alert('MetaMask no está instalado. Por favor, instálalo para continuar.');
+    }
+};
 
-// Dirección del contrato y ABI
-const contractAddress = "0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5";  // Reemplazar con tu dirección del contrato
+// Función para obtener la cuenta actual
+async function getCurrentAccount() {
+    const accounts = await web3.eth.getAccounts();
+    return accounts[0];
+}
+
+// Función para manejar errores
+function handleError(message, error = '') {
+    console.error(message, error);
+}
+
+// Función para actualizar el botón de conexión
+function updateConnectButton(account) {
+    const connectButton = document.getElementById('connect');
+    connectButton.innerText = `Conectado: ${account.slice(0, 6)}...${account.slice(-4)}`;
+}
+
+// Funciones para interactuar con el contrato inteligente (coloca tu ABI donde se indica)
+const contractAddress = "0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5";  // Reemplaza con tu dirección del contrato
 const abi = [
         {
             "inputs": [
@@ -839,43 +868,7 @@ const abi = [
     ];  // Reemplaza con el ABI de tu contrato
     const contract = new web3.eth.Contract(abi, contractAddress);
     
-    // Evento para conectar la billetera (MetaMask)
-    document.getElementById('connect').onclick = async () => {
-        if (window.ethereum) {
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const account = await getCurrentAccount();
-                updateConnectButton(account);
-                console.log('Cuenta conectada:', account);
-                alert(`Cuenta conectada: ${account}`);
-            } catch (error) {
-                console.error("Error al conectar la billetera", error);
-                alert("Error al conectar la billetera. Asegúrate de aprobar la conexión.");
-            }
-        } else {
-            console.error('MetaMask no está instalado.');
-            alert('MetaMask no está instalado. Por favor, instálalo para continuar.');
-        }
-    };
-    
-    // Función para obtener la cuenta actual
-    async function getCurrentAccount() {
-        const accounts = await web3.eth.getAccounts();
-        return accounts[0];
-    }
-    
-    // Función para manejar errores de manera centralizada
-    function handleError(message, error = '') {
-        console.error(message, error);
-    }
-    
-    // Función para actualizar el texto del botón de conexión
-    function updateConnectButton(account) {
-        const connectButton = document.getElementById('connect');
-        connectButton.innerText = `Conectado: ${account.slice(0, 6)}...${account.slice(-4)}`;
-    }
-    
-    // Función para hacer staking
+    // Funciones de interacción con el contrato
     async function stakeTokens(amount) {
         const account = await getCurrentAccount();
         try {
@@ -886,7 +879,6 @@ const abi = [
         }
     }
     
-    // Función para reclamar recompensas
     async function getReward() {
         const account = await getCurrentAccount();
         try {
@@ -897,7 +889,6 @@ const abi = [
         }
     }
     
-    // Función para añadir liquidez
     async function addLiquidity(amount) {
         const account = await getCurrentAccount();
         try {
@@ -908,7 +899,6 @@ const abi = [
         }
     }
     
-    // Función para hacer swap de tokens
     async function swapTokens(amount) {
         const account = await getCurrentAccount();
         try {
@@ -919,7 +909,6 @@ const abi = [
         }
     }
     
-    // Función para retirar liquidez
     async function withdrawLiquidity(amount) {
         const account = await getCurrentAccount();
         try {
@@ -930,9 +919,9 @@ const abi = [
         }
     }
     
-    // Manejadores de eventos para los botones del DOM
+    // Manejadores de eventos para botones
     document.getElementById('stakeButton').onclick = () => {
-        const amount = prompt("Ingrese la cantidad de tokens a stakear:");
+        const amount = document.getElementById('stakeAmount').value;
         if (isNaN(amount) || amount <= 0) {
             handleError("Ingrese una cantidad válida");
             return;
@@ -940,31 +929,29 @@ const abi = [
         stakeTokens(amount);
     };
     
-    document.getElementById('rewardButton').onclick = getReward;
-    
-    document.getElementById('addLiquidityButton').onclick = async () => {
+    document.getElementById('addLiquidityButton').onclick = () => {
         const amount = document.getElementById('liquidityAmount').value;
         if (isNaN(amount) || amount <= 0) {
             handleError("Ingrese una cantidad válida");
             return;
         }
-        await addLiquidity(amount);
+        addLiquidity(amount);
     };
     
-    document.getElementById('swapButton').onclick = async () => {
+    document.getElementById('swapButton').onclick = () => {
         const amount = document.getElementById('swapAmount').value;
         if (isNaN(amount) || amount <= 0) {
             handleError("Ingrese una cantidad válida");
             return;
         }
-        await swapTokens(amount);
+        swapTokens(amount);
     };
     
-    document.getElementById('withdrawButton').onclick = async () => {
+    document.getElementById('withdrawButton').onclick = () => {
         const amount = document.getElementById('withdrawAmount').value;
         if (isNaN(amount) || amount <= 0) {
             handleError("Ingrese una cantidad válida");
             return;
         }
-        await withdrawLiquidity(amount);
+        withdrawLiquidity(amount);
     };
