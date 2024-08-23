@@ -6,6 +6,7 @@ window.addEventListener('load', async () => {
             // Solicita acceso a la billetera Ethereum
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             const account = await getCurrentAccount();
+            updateConnectButton(account);
             console.log('Connected account:', account);
         } catch (error) {
             handleError("El usuario denegó el acceso a la billetera", error);
@@ -14,15 +15,15 @@ window.addEventListener('load', async () => {
         handleError('No se detectó ningún proveedor de Web3. Por favor, instala MetaMask.');
     }
 });
+
 // Ajustar la velocidad del cambio de color
 setInterval(() => {
-    // Código que cambia los colores
-    const element = document.querySelector('elementSelector');  // Selecciona el elemento al que le cambian los colores
-    element.style.backgroundColor = generateRandomColor();  // Función que genera un color aleatorio
-}, 3000);  // Cambia el color cada 3 segundos (3000 ms)
+    const element = document.querySelector('elementSelector');  // Reemplazar 'elementSelector' con el selector correcto
+    element.style.backgroundColor = generateRandomColor();  // Asegúrate de tener esta función definida
+}, 5000);  // Cambia el color cada 5 segundos
 
 // Dirección del contrato y ABI
-const contractAddress = "0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5";  // Reemplaza con tu dirección del contrato
+const contractAddress = "0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5";  // Reemplazar con tu dirección del contrato
 const abi = [
         {
             "inputs": [
@@ -837,25 +838,25 @@ const abi = [
         }
     ];  // Reemplaza con el ABI de tu contrato
     const contract = new web3.eth.Contract(abi, contractAddress);
-
+    
     // Evento para conectar la billetera (MetaMask)
-document.getElementById('connect').onclick = async () => {
-    if (window.ethereum) {
-        try {
-            // Solicitar acceso a la billetera
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const accounts = await web3.eth.getAccounts();
-            console.log('Cuenta conectada:', accounts[0]);
-            alert(`Cuenta conectada: ${accounts[0]}`);
-        } catch (error) {
-            console.error("Error al conectar la billetera", error);
-            alert("Error al conectar la billetera. Asegúrate de aprobar la conexión.");
+    document.getElementById('connect').onclick = async () => {
+        if (window.ethereum) {
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const account = await getCurrentAccount();
+                updateConnectButton(account);
+                console.log('Cuenta conectada:', account);
+                alert(`Cuenta conectada: ${account}`);
+            } catch (error) {
+                console.error("Error al conectar la billetera", error);
+                alert("Error al conectar la billetera. Asegúrate de aprobar la conexión.");
+            }
+        } else {
+            console.error('MetaMask no está instalado.');
+            alert('MetaMask no está instalado. Por favor, instálalo para continuar.');
         }
-    } else {
-        console.error('MetaMask no está instalado.');
-        alert('MetaMask no está instalado. Por favor, instálalo para continuar.');
-    }
-};
+    };
     
     // Función para obtener la cuenta actual
     async function getCurrentAccount() {
@@ -866,6 +867,12 @@ document.getElementById('connect').onclick = async () => {
     // Función para manejar errores de manera centralizada
     function handleError(message, error = '') {
         console.error(message, error);
+    }
+    
+    // Función para actualizar el texto del botón de conexión
+    function updateConnectButton(account) {
+        const connectButton = document.getElementById('connect');
+        connectButton.innerText = `Conectado: ${account.slice(0, 6)}...${account.slice(-4)}`;
     }
     
     // Función para hacer staking
@@ -924,16 +931,6 @@ document.getElementById('connect').onclick = async () => {
     }
     
     // Manejadores de eventos para los botones del DOM
-    document.getElementById('connect').onclick = async () => {
-        try {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const account = await getCurrentAccount();
-            console.log('Connected account:', account);
-        } catch (error) {
-            handleError("Error al conectar la cuenta:", error);
-        }
-    };
-    
     document.getElementById('stakeButton').onclick = () => {
         const amount = prompt("Ingrese la cantidad de tokens a stakear:");
         if (isNaN(amount) || amount <= 0) {
