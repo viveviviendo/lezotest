@@ -1,104 +1,107 @@
+/* Mantener el degradado animado en el fondo */
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4, #ff9a9e);
+    background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee, #ff9a9e, #fad0c4, #fbc2eb);
     background-size: 400% 400%;
-    animation: gradientBackground 20s ease infinite;
+    animation: gradientBackground 25s ease infinite;
+    margin: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    min-height: 100vh;
 }
 
 @keyframes gradientBackground {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-.container {
+/* Estilos generales */
+h1 {
+    color: black;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+#container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    grid-gap: 20px;
-    padding: 20px;
+    gap: 20px;
+    width: 80%;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.card {
-    position: relative;
-    background-color: white;
-    padding: 20px;
+/* Estilo para cada caja de categoría */
+.category-box {
+    border: 5px solid;
     border-radius: 15px;
-    overflow: hidden;
-    border: 2px solid black;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    animation: borderColorChange 3s infinite;
 }
 
-.card:before {
+/* Borde negro dentro y fuera */
+.category-box::before, .category-box::after {
     content: '';
     position: absolute;
     top: -5px;
+    bottom: -5px;
     left: -5px;
     right: -5px;
-    bottom: -5px;
-    background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4, #ff9a9e);
-    background-size: 400% 400%;
-    animation: gradientBorder 5s ease infinite;
-    z-index: -1;
+    border: 2px solid black;
     border-radius: 15px;
-    border: 2px solid black; /* Borde exterior negro */
-}
-
-.card:after {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    border: 2px solid black; /* Borde interior negro */
-    border-radius: 10px;
     z-index: -1;
 }
 
-@keyframes gradientBorder {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.category-box::after {
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
 }
 
-/* Colores de fondo sólidos para cada sección */
-.staking {
-    background-color: #f5b7b1; /* Staking - Rosa */
+@keyframes borderColorChange {
+    0% {
+        border-color: #ff9a9e;
+    }
+    50% {
+        border-color: #fad0c4;
+    }
+    100% {
+        border-color: #fbc2eb;
+    }
 }
 
-.add-liquidity {
-    background-color: #aed6f1; /* Add Liquidity - Azul Claro */
+/* Colores sólidos diferentes para cada categoría */
+#staking-box {
+    background-color: #ffe5e5;
 }
 
-.withdraw-liquidity {
-    background-color: #a9dfbf; /* Withdraw Liquidity - Verde Claro */
+#liquidity-box {
+    background-color: #e5fff5;
 }
 
-.swap {
-    background-color: #f9e79f; /* Swap Tokens - Amarillo Claro */
+#withdraw-box {
+    background-color: #e5f5ff;
 }
 
-h2 {
-    text-align: center;
+#swap-box {
+    background-color: #fff5e5;
 }
 
-button {
-    display: block;
-    margin: 10px auto;
-    padding: 10px 20px;
-    background-color: #333;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #555;
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    #container {
+        grid-template-columns: 1fr;
+    }
 }
