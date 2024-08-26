@@ -1,13 +1,13 @@
 /* Mantener el degradado animado en el fondo */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
     background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee, #ff9a9e, #fad0c4, #fbc2eb);
     background-size: 400% 400%;
     animation: gradientBackground 25s ease infinite;
     margin: 0;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     min-height: 100vh;
 }
@@ -24,50 +24,49 @@ body {
     }
 }
 
-/* Estilos generales */
 h1 {
     color: black;
     text-align: center;
     margin-bottom: 40px;
+    font-size: 2.5em;
+    font-weight: 600;
 }
 
+/* Contenedor principal */
 #container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
-    width: 80%;
+    width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
 }
 
-/* Estilo para cada caja de categoría */
 .category-box {
-    border: 5px solid;
+    border: 5px solid transparent;
     border-radius: 15px;
     padding: 20px;
     text-align: center;
     position: relative;
-    animation: borderColorChange 3s infinite;
+    background-clip: padding-box;
+    overflow: hidden;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Borde negro dentro y fuera */
 .category-box::before, .category-box::after {
     content: '';
     position: absolute;
-    top: -5px;
-    bottom: -5px;
-    left: -5px;
-    right: -5px;
-    border: 2px solid black;
-    border-radius: 15px;
     z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 15px;
+    border: 5px solid black;
 }
 
 .category-box::after {
-    top: 5px;
-    bottom: 5px;
-    left: 5px;
-    right: 5px;
+    border-color: #fbc2eb;
+    animation: borderColorChange 3s infinite;
 }
 
 @keyframes borderColorChange {
@@ -99,9 +98,50 @@ h1 {
     background-color: #fff5e5;
 }
 
-/* Ajustes responsivos */
+input[type="number"] {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    width: calc(100% - 24px);
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
 @media (max-width: 768px) {
     #container {
         grid-template-columns: 1fr;
     }
+
+    .category-box {
+        margin-bottom: 20px;
+    }
+}
+
+#connect {
+    font-size: 1.2em;
+    padding: 10px 30px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#connect:hover {
+    background-color: #0056b3;
 }
