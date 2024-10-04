@@ -43,6 +43,7 @@ async function getCurrentAccount() {
 // Función para manejar errores
 function handleError(message, error = '') {
     console.error(message, error);
+    alert(message);
 }
 
 // Función para actualizar el botón de conexión
@@ -868,17 +869,20 @@ const abi = [
     ];  // Reemplaza con el ABI de tu contrato
     const contract = new web3.eth.Contract(abi, contractAddress);
     
-    // Funciones de interacción con el contrato
+    // Función para hacer stake de tokens
     async function stakeTokens(amount) {
         const account = await getCurrentAccount();
         try {
-            await contract.methods.stake(amount).send({ from: account });
+            const amountInWei = web3.utils.toWei(amount, 'ether'); // Asegúrate de convertir el valor a wei
+            await contract.methods.stake(amountInWei).send({ from: account });
             console.log(`Has hecho stake de ${amount} tokens`);
+            alert(`Has hecho stake de ${amount} tokens`);
         } catch (error) {
             handleError("Error al hacer staking:", error);
         }
     }
     
+    // Función para reclamar recompensa
     async function getReward() {
         const account = await getCurrentAccount();
         try {
@@ -889,31 +893,40 @@ const abi = [
         }
     }
     
+    // Función para añadir liquidez
     async function addLiquidity(amount) {
         const account = await getCurrentAccount();
         try {
-            await contract.methods.addLiquidity(amount).send({ from: account });
+            const amountInWei = web3.utils.toWei(amount, 'ether'); // Convertir a wei
+            await contract.methods.addLiquidity(amountInWei).send({ from: account });
             console.log(`Has añadido ${amount} de liquidez`);
+            alert(`Has añadido ${amount} de liquidez`);
         } catch (error) {
             handleError("Error al añadir liquidez:", error);
         }
     }
     
+    // Función para hacer swap de tokens
     async function swapTokens(amount) {
         const account = await getCurrentAccount();
         try {
-            await contract.methods.swap(amount).send({ from: account });
+            const amountInWei = web3.utils.toWei(amount, 'ether'); // Convertir a wei
+            await contract.methods.swap(amountInWei).send({ from: account });
             console.log(`Has hecho swap de ${amount} tokens`);
+            alert(`Has hecho swap de ${amount} tokens`);
         } catch (error) {
             handleError("Error al hacer swap de tokens:", error);
         }
     }
     
+    // Función para retirar liquidez
     async function withdrawLiquidity(amount) {
         const account = await getCurrentAccount();
         try {
-            await contract.methods.withdrawLiquidity(amount).send({ from: account });
+            const amountInWei = web3.utils.toWei(amount, 'ether'); // Convertir a wei
+            await contract.methods.withdrawLiquidity(amountInWei).send({ from: account });
             console.log(`Has retirado ${amount} de liquidez`);
+            alert(`Has retirado ${amount} de liquidez`);
         } catch (error) {
             handleError("Error al retirar liquidez:", error);
         }
