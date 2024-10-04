@@ -1,6 +1,7 @@
 // Espera a que la ventana se cargue
 window.addEventListener('load', async () => {
     if (window.ethereum) {
+        // Inicializa Web3 manualmente utilizando window.ethereum
         window.web3 = new Web3(window.ethereum);
         try {
             // Solicita acceso a la billetera Ethereum
@@ -43,7 +44,6 @@ async function getCurrentAccount() {
 // Función para manejar errores
 function handleError(message, error = '') {
     console.error(message, error);
-    alert(message);  // Para mayor visibilidad, muestra alertas de error
 }
 
 // Función para actualizar el botón de conexión
@@ -52,8 +52,8 @@ function updateConnectButton(account) {
     connectButton.innerText = `Conectado: ${account.slice(0, 6)}...${account.slice(-4)}`;
 }
 
-// Funciones para interactuar con el contrato inteligente (coloca tu ABI donde se indica)
-const contractAddress = "0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5";  // Reemplaza con tu dirección del contrato
+// Inicialización del contrato (reemplaza ABI y dirección de contrato)
+const contractAddress = "0xcf16237d84a6d04ac0df7992e7aaa0202a6a1fd5";  // Dirección del contrato
 const abi = [
         {
             "inputs": [
@@ -866,31 +866,35 @@ const abi = [
             "stateMutability": "view",
             "type": "function"
         }
-    ];  // Reemplaza con el ABI de tu contrato
+    ];  // ABI del contrato
     const contract = new web3.eth.Contract(abi, contractAddress);
     
     // Funciones de interacción con el contrato
     async function stakeTokens(amount) {
         const account = await getCurrentAccount();
         try {
-            const amountInWei = web3.utils.toWei(amount, 'ether'); // Convierte a wei
-            console.log("Realizando stake de:", amountInWei);
-            await contract.methods.stake(amountInWei).send({ from: account });
+            await contract.methods.stake(amount).send({ from: account });
             console.log(`Has hecho stake de ${amount} tokens`);
-            alert(`Has hecho stake de ${amount} tokens`);
         } catch (error) {
             handleError("Error al hacer staking:", error);
+        }
+    }
+    
+    async function getReward() {
+        const account = await getCurrentAccount();
+        try {
+            await contract.methods.getReward().send({ from: account });
+            console.log("Recompensa reclamada");
+        } catch (error) {
+            handleError("Error al reclamar recompensa:", error);
         }
     }
     
     async function addLiquidity(amount) {
         const account = await getCurrentAccount();
         try {
-            const amountInWei = web3.utils.toWei(amount, 'ether');
-            console.log("Añadiendo liquidez de:", amountInWei);
-            await contract.methods.addLiquidity(amountInWei).send({ from: account });
+            await contract.methods.addLiquidity(amount).send({ from: account });
             console.log(`Has añadido ${amount} de liquidez`);
-            alert(`Has añadido ${amount} de liquidez`);
         } catch (error) {
             handleError("Error al añadir liquidez:", error);
         }
@@ -899,11 +903,8 @@ const abi = [
     async function swapTokens(amount) {
         const account = await getCurrentAccount();
         try {
-            const amountInWei = web3.utils.toWei(amount, 'ether');
-            console.log("Realizando swap de:", amountInWei);
-            await contract.methods.swap(amountInWei).send({ from: account });
+            await contract.methods.swap(amount).send({ from: account });
             console.log(`Has hecho swap de ${amount} tokens`);
-            alert(`Has hecho swap de ${amount} tokens`);
         } catch (error) {
             handleError("Error al hacer swap de tokens:", error);
         }
@@ -912,11 +913,8 @@ const abi = [
     async function withdrawLiquidity(amount) {
         const account = await getCurrentAccount();
         try {
-            const amountInWei = web3.utils.toWei(amount, 'ether');
-            console.log("Retirando liquidez de:", amountInWei);
-            await contract.methods.withdrawLiquidity(amountInWei).send({ from: account });
+            await contract.methods.withdrawLiquidity(amount).send({ from: account });
             console.log(`Has retirado ${amount} de liquidez`);
-            alert(`Has retirado ${amount} de liquidez`);
         } catch (error) {
             handleError("Error al retirar liquidez:", error);
         }
@@ -924,7 +922,7 @@ const abi = [
     
     // Manejadores de eventos para botones
     document.getElementById('stakeButton').onclick = () => {
-        const amount = document.getElementById('stakeAmount').value.trim();
+        const amount = document.getElementById('stakeAmount').value;
         if (isNaN(amount) || amount <= 0) {
             handleError("Ingrese una cantidad válida");
             return;
@@ -933,7 +931,7 @@ const abi = [
     };
     
     document.getElementById('addLiquidityButton').onclick = () => {
-        const amount = document.getElementById('liquidityAmount').value.trim();
+        const amount = document.getElementById('liquidityAmount').value;
         if (isNaN(amount) || amount <= 0) {
             handleError("Ingrese una cantidad válida");
             return;
@@ -942,7 +940,7 @@ const abi = [
     };
     
     document.getElementById('swapButton').onclick = () => {
-        const amount = document.getElementById('swapAmount').value.trim();
+        const amount = document.getElementById('swapAmount').value;
         if (isNaN(amount) || amount <= 0) {
             handleError("Ingrese una cantidad válida");
             return;
@@ -951,7 +949,7 @@ const abi = [
     };
     
     document.getElementById('withdrawButton').onclick = () => {
-        const amount = document.getElementById('withdrawAmount').value.trim();
+        const amount = document.getElementById('withdrawAmount').value;
         if (isNaN(amount) || amount <= 0) {
             handleError("Ingrese una cantidad válida");
             return;
