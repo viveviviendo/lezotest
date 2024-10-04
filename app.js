@@ -934,7 +934,7 @@ const abi = [
     
     // Manejadores de eventos para botones
     document.getElementById('stakeButton').onclick = () => {
-        const amount = document.getElementById('stakeAmount').value;
+        const amount = document.getElementById('stakeAmount').value.trim(); // Eliminar espacios en blanco
         if (isNaN(amount) || amount <= 0) {
             handleError("Ingrese una cantidad válida");
             return;
